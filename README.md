@@ -1,5 +1,5 @@
 # MOSCONV
-A CP/M 2.2 program that converts Intel Hex Object code and converts it into they Sym-1 MOS paper tape standard
+A CP/M 2.2 program that converts Intel Hex Object code and converts it into they SYM-1/KIM-1 MOS paper tape standard
 
 I wrote this with the intention of using the A65.COM 6502 assembler.
 
