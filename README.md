@@ -24,18 +24,13 @@ changed.
 The proper syntax is:
 `mosconv -s/k [-b xx] hexfile.hex file.ptp`
 
-* -s/k\
+* -**s**/**k**\
 This switch controls if your output paper tape is KIM or SYM compatible.
-* -b\
+* -**b**\
 This switch controls the number of bytes per record you write. The KIM-1 supports 24 bytes per record by default. The SYM-1 suppors 16 bytes by default, but either can be changed with this switch.
-* hexfile.hex\
+* **hexfile.hex**\
 Source Intel Hex Object code file.
-* file.ptp\
+* **file.ptp**\
 Output paper tape file.
 
 Then, you can use your program of choice to pipe out `file.ptp` as a paper tape to your SYM-1.
-
-## MAXRC
-The default standard for the SYM-1 is to allow up to 16 (10 hex) data bytes per line in paper tape.
-You can change this by changing the MAXRC byte in RAM ($A658) to the length you wish. Be sure
-to change the MAXRC `#DEFINE` to match this.
