@@ -13,7 +13,6 @@
 #define CPM 0
 #define AZTEC_C 0
 #define HI_TECH 0
-//#define MAXRC 16
 
 #include "stdio.h"
 #if CPM == 0 && AZTEC_C == 0
