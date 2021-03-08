@@ -27,7 +27,7 @@ The proper syntax is:
 * -**s**/**k**\
 This switch controls if your output paper tape is KIM or SYM compatible.
 * -**b**\
-This switch controls the number of bytes per record you write. The KIM-1 supports 24 bytes per record by default. The SYM-1 suppors 16 bytes by default, but either can be changed with this switch.
+This switch controls the number of bytes per record you write. The KIM-1 supports 24 bytes per record by default. The SYM-1 supports 16 bytes by default, but either can be changed with this switch.
 * **hexfile.hex**\
 Source Intel Hex Object code file.
 * **file.ptp**\
