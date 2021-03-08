@@ -1,9 +1,10 @@
 # MOSCONV
-Converts Intel Hex Object code and converts it into they Sym-1 MOS paper tape standard
+A CP/M 2.2 program that converts Intel Hex Object code and converts it into they Sym-1 MOS paper tape standard
 
 I wrote this with the intention of using the A65.COM 6502 assembler.
 
 ## Building
+### CP/M
 This program is formatted and written with the Aztec C compiler in mind. In order to
 compile, send MOSCONV.C to your system.
 
@@ -15,6 +16,9 @@ Compile with the flags:
 'as mosconv'
 'ln mosconv.o c.lib'
 
+### *NIX/WINDOWS
+As long as you have the C standard libraries (gcc/mingw), you're all set to build and use! No switches need to be
+changed.
 
 ## Using
 The proper syntax is:
