@@ -34,3 +34,7 @@ Source Intel Hex Object code file.
 Output paper tape file.
 
 Then, you can use your program of choice to pipe out `file.ptp` as a paper tape to your SYM-1/KIM-1.
+
+## MAXRC
+The SYM-1 supports data record lengths greater than 16 (10 hex) bytes.\
+In order to enable this, you must change the MAXRC byte in memory by changing the contents of memory location $A658.
