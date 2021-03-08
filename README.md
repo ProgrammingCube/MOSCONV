@@ -33,4 +33,4 @@ Source Intel Hex Object code file.
 * **file.ptp**\
 Output paper tape file.
 
-Then, you can use your program of choice to pipe out `file.ptp` as a paper tape to your SYM-1.
+Then, you can use your program of choice to pipe out `file.ptp` as a paper tape to your SYM-1/KIM-1.
