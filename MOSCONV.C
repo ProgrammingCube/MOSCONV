@@ -94,6 +94,7 @@ char *argv[];
     unsigned char arraycnt = 0;
     unsigned char MAXRC;
     unsigned char model;
+    unsigned char reccount = 0;
     FILE *fptr;
     FILE *pfptr;
 
@@ -153,6 +154,7 @@ char *argv[];
 
         if (srcllen > 12)
         {
+            reccount += 1;
             datallen = srcllen - 12;
             dataline = (unsigned char *)malloc(datallen);
             datacopy(line, dataline, datallen);
@@ -202,7 +204,7 @@ char *argv[];
                 }
                 if (model == 's')
                 {
-                    fprintf(pfptr, "%c", '\r');
+                    fprintf(pfptr, "%c", '\n');
                 }
 
                 datallen -= numBytes;
@@ -217,13 +219,16 @@ char *argv[];
         memset(line, '\0', BUFFER);
     }
     printf("Finishing file...\n");
-    if (model == 'k')
+    if (model == 'k')   /* print footer */
     {
-        //
+        fprintf(pfptr, "%s", ";00");
+        fprintf(pfptr, "%04x", reccount);
+        fprintf(pfptr, "%04x", reccount);   /* hack checksum */
+        fprintf(pfptr, "%c", 0x13);         /* XOFF */
     }
     if (model == 's')
     {
-        fprintf(pfptr, "%s", ";00\r");  /* print footer */
+        fprintf(pfptr, "%s", ";00\r");
     }
 
 
