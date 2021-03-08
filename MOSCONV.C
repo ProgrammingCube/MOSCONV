@@ -13,7 +13,7 @@
 #define CPM 0
 #define AZTEC_C 0
 #define HI_TECH 0
-#define MAXRC 16
+//#define MAXRC 16
 
 #include "stdio.h"
 #if CPM == 0 && AZTEC_C == 0
@@ -92,18 +92,51 @@ char *argv[];
     unsigned char numBytes;
     unsigned short checkSum = 0;
     unsigned char arraycnt = 0;
+    unsigned char MAXRC = 16;
+    unsigned char model;
     FILE *fptr;
     FILE *pfptr;
 
-    if ((fptr = fopen(argv[1], "r")) == NULL)
+    /* mosconv -s/k [-b xx] add.hex add.ptp */
+
+    if (argv[1][0] == '-')
+    {
+        switch(argv[1][1])
+        {
+            case 'k': model = 'k'; break;
+            case 'K': model = 'k'; break;
+            case 's': model = 's'; break;
+            case 'S': model = 's'; break;
+        }
+    }
+    else
+    {
+        printf("No target board specified\n");
+        return -3;
+    }
+
+    if (argv[2][0] == '-')
+    {
+        if (argv[2][1] == 'b' || argv[2][1] == 'B')
+        {
+            MAXRC = atoi(argv[3]);
+        }
+        else
+        {
+            printf("Incorrect parameter\n");
+            return -4;
+        }
+    }
+
+    if ((fptr = fopen(argv[argc - 2], "r")) == NULL)
     {
         printf("File does not exist\n");
         return -1;
     }
 
-    if ((pfptr = fopen(argv[2], "w")) == NULL)
+    if ((pfptr = fopen(argv[argc - 1], "w")) == NULL)
     {
-        printf("Syntax: mosconv test.asm test.ptp\n");
+        printf("Syntax: mosconv -s/k [-b xx] test.asm test.ptp\n");
         return -2;
     }
 
@@ -155,7 +188,11 @@ char *argv[];
                     fprintf(pfptr, "%02x", byteline[arraycnt + i]);
                 }
                 fprintf(pfptr, "%04x", checkSum);
-                fprintf(pfptr, "%c", '\n');
+                fprintf(pfptr, "%c", '\r');
+                if (model == 'k')
+                {
+                    fprintf(pfptr, "%s", "\r");
+                }
 
                 datallen -= numBytes;
                 arraycnt += numBytes;
