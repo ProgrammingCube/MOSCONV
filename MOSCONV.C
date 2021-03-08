@@ -188,10 +188,21 @@ char *argv[];
                     fprintf(pfptr, "%02x", byteline[arraycnt + i]);
                 }
                 fprintf(pfptr, "%04x", checkSum);
-                fprintf(pfptr, "%c", '\r');
                 if (model == 'k')
                 {
-                    fprintf(pfptr, "%s", "\r");
+                    fprintf(pfptr, "%c", 0x0D); /* cr */
+                    fprintf(pfptr, "%c", 0x0A); /* lf */
+
+                    fprintf(pfptr, "%c", 0x00); /* null */
+                    fprintf(pfptr, "%c", 0x00); /* null */
+                    fprintf(pfptr, "%c", 0x00); /* null */
+                    fprintf(pfptr, "%c", 0x00); /* null */
+                    fprintf(pfptr, "%c", 0x00); /* null */
+                    fprintf(pfptr, "%c", 0x00); /* null */
+                }
+                if (model == 's')
+                {
+                    fprintf(pfptr, "%c", '\r');
                 }
 
                 datallen -= numBytes;
@@ -206,6 +217,10 @@ char *argv[];
         memset(line, '\0', BUFFER);
     }
     printf("Finishing file...\n");
+    if (model == 'k')
+    {
+        //
+    }
     if (model == 's')
     {
         fprintf(pfptr, "%s", ";00\r");  /* print footer */
