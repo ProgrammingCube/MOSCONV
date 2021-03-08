@@ -92,7 +92,7 @@ char *argv[];
     unsigned char numBytes;
     unsigned short checkSum = 0;
     unsigned char arraycnt = 0;
-    unsigned char MAXRC = 16;
+    unsigned char MAXRC;
     unsigned char model;
     FILE *fptr;
     FILE *pfptr;
@@ -103,10 +103,10 @@ char *argv[];
     {
         switch(argv[1][1])
         {
-            case 'k': model = 'k'; break;
-            case 'K': model = 'k'; break;
-            case 's': model = 's'; break;
-            case 'S': model = 's'; break;
+            case 'k': model = 'k'; MAXRC = 24; break;
+            case 'K': model = 'k'; MAXRC = 24; break;
+            case 's': model = 's'; MAXRC = 16; break;
+            case 'S': model = 's'; MAXRC = 16; break;
         }
     }
     else
@@ -206,7 +206,11 @@ char *argv[];
         memset(line, '\0', BUFFER);
     }
     printf("Finishing file...\n");
-    fprintf(pfptr, "%s\n", ";00");          /* print footer */
+    if (model == 's')
+    {
+        fprintf(pfptr, "%s", ";00\r");  /* print footer */
+    }
+
 
     fclose(fptr);
     fclose(pfptr);
