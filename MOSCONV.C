@@ -93,7 +93,7 @@ char *argv[];
     unsigned char arraycnt = 0;
     unsigned char MAXRC;
     unsigned char model;
-    unsigned char reccount = 0;
+    unsigned short reccount = 0;
     FILE *fptr;
     FILE *pfptr;
 
