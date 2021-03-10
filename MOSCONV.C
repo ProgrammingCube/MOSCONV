@@ -94,6 +94,7 @@ char *argv[];
     unsigned char MAXRC;
     unsigned char model;
     unsigned short reccount = 0;
+	unsigned char nullchar = 0;
     FILE *fptr;
     FILE *pfptr;
 
@@ -193,13 +194,16 @@ char *argv[];
                 {
                     fprintf(pfptr, "%c", 0x0D); /* cr */
                     fprintf(pfptr, "%c", 0x0A); /* lf */
-
-                    fprintf(pfptr, "%c", 0x00); /* null */
-                    fprintf(pfptr, "%c", 0x00); /* null */
-                    fprintf(pfptr, "%c", 0x00); /* null */
-                    fprintf(pfptr, "%c", 0x00); /* null */
-                    fprintf(pfptr, "%c", 0x00); /* null */
-                    fprintf(pfptr, "%c", 0x00); /* null */
+					
+					if (nullchar == 1)
+					{
+						fprintf(pfptr, "%c", 0x00); /* null */
+						fprintf(pfptr, "%c", 0x00); /* null */
+						fprintf(pfptr, "%c", 0x00); /* null */
+						fprintf(pfptr, "%c", 0x00); /* null */
+						fprintf(pfptr, "%c", 0x00); /* null */
+						fprintf(pfptr, "%c", 0x00); /* null */
+					}
                 }
                 if (model == 's')
                 {
@@ -223,7 +227,7 @@ char *argv[];
         fprintf(pfptr, "%s", ";00");
         fprintf(pfptr, "%04x", reccount);
         /* fprintf(pfptr, "%04x", reccount);   /* hack checksum */
-        fprintf(pfptr, %04x", (reccount >> 8) + (reccount & 0xFF));
+        fprintf(pfptr, "%04x", (unsigned char)(reccount >> 8) + (unsigned char)(reccount & 0xFF));
         fprintf(pfptr, "%c", 0x13);         /* XOFF */
     }
     if (model == 's')
