@@ -222,7 +222,8 @@ char *argv[];
     {
         fprintf(pfptr, "%s", ";00");
         fprintf(pfptr, "%04x", reccount);
-        fprintf(pfptr, "%04x", reccount);   /* hack checksum */
+        /* fprintf(pfptr, "%04x", reccount);   /* hack checksum */
+        fprintf(pfptr, %04x", (reccount >> 8) + (reccount & 0xFF));
         fprintf(pfptr, "%c", 0x13);         /* XOFF */
     }
     if (model == 's')
