@@ -95,10 +95,11 @@ char *argv[];
     unsigned char model;
     unsigned short reccount = 0;
 	unsigned char nullchar = 0;
+    unsigned char offset = 0;
     FILE *fptr;
     FILE *pfptr;
 
-    /* mosconv -s/k [-b xx] add.hex add.ptp */
+    /* mosconv -s/k [-b xx] add.hex add.ptp [n]*/
 
     if (argv[1][0] == '-')
     {
@@ -129,13 +130,22 @@ char *argv[];
         }
     }
 
-    if ((fptr = fopen(argv[argc - 2], "r")) == NULL)
+    if (model == 'k')
+    {
+        if (argv[argc - 1] == "n")
+        {
+            nullchar = 1;
+            offset = 1;
+        }
+    }
+
+    if ((fptr = fopen(argv[argc - 2 - offset], "r")) == NULL)
     {
         printf("File does not exist\n");
         return -1;
     }
 
-    if ((pfptr = fopen(argv[argc - 1], "w")) == NULL)
+    if ((pfptr = fopen(argv[argc - 1 - offset], "w")) == NULL)
     {
         printf("Syntax: mosconv -s/k [-b xx] test.asm test.ptp\n");
         return -2;
