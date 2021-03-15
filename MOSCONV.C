@@ -13,6 +13,7 @@
 #define CPM 0
 #define AZTEC_C 0
 #define HI_TECH 0
+#define NULLCHAR 0
 
 #include "stdio.h"
 #if CPM == 0 && AZTEC_C == 0
@@ -94,8 +95,6 @@ char *argv[];
     unsigned char MAXRC;
     unsigned char model;
     unsigned short reccount = 0;
-	unsigned char nullchar = 0;
-    unsigned char offset = 0;
     FILE *fptr;
     FILE *pfptr;
 
@@ -130,22 +129,13 @@ char *argv[];
         }
     }
 
-    if (argv[argc - 1] == "n")
-    {
-        if (model == 'k')
-        {
-            nullchar = 1;
-        }
-        offset = 1;
-    }
-
-    if ((fptr = fopen(argv[argc - 2 - offset], "r")) == NULL)
+    if ((fptr = fopen(argv[argc - 2], "r")) == NULL)
     {
         printf("File does not exist\n");
         return -1;
     }
 
-    if ((pfptr = fopen(argv[argc - 1 - offset], "w")) == NULL)
+    if ((pfptr = fopen(argv[argc - 1], "w")) == NULL)
     {
         printf("Syntax: mosconv -s/k [-b xx] test.asm test.ptp\n");
         return -2;
@@ -205,15 +195,14 @@ char *argv[];
                     fprintf(pfptr, "%c", 0x0D); /* cr */
                     fprintf(pfptr, "%c", 0x0A); /* lf */
 					
-					if (nullchar == 1)
-					{
-						fprintf(pfptr, "%c", 0x00); /* null */
-						fprintf(pfptr, "%c", 0x00); /* null */
-						fprintf(pfptr, "%c", 0x00); /* null */
-						fprintf(pfptr, "%c", 0x00); /* null */
-						fprintf(pfptr, "%c", 0x00); /* null */
-						fprintf(pfptr, "%c", 0x00); /* null */
-					}
+					#if NULLCHAR    ==  1
+                    fprintf(pfptr, "%c", 0x00); /* null */
+					fprintf(pfptr, "%c", 0x00); /* null */
+					fprintf(pfptr, "%c", 0x00); /* null */
+					fprintf(pfptr, "%c", 0x00); /* null */
+					fprintf(pfptr, "%c", 0x00); /* null */
+					fprintf(pfptr, "%c", 0x00); /* null */
+                    #endif
                 }
                 if (model == 's')
                 {
