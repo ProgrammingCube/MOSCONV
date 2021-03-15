@@ -195,13 +195,14 @@ char *argv[];
                     fprintf(pfptr, "%c", 0x0D); /* cr */
                     fprintf(pfptr, "%c", 0x0A); /* lf */
 					
-					#if NULLCHAR    ==  1
+					#if NULLCHAR    ==  0
                     fprintf(pfptr, "%c", 0x00); /* null */
 					fprintf(pfptr, "%c", 0x00); /* null */
 					fprintf(pfptr, "%c", 0x00); /* null */
 					fprintf(pfptr, "%c", 0x00); /* null */
 					fprintf(pfptr, "%c", 0x00); /* null */
 					fprintf(pfptr, "%c", 0x00); /* null */
+
                     #endif
                 }
                 if (model == 's')
