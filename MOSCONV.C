@@ -130,13 +130,13 @@ char *argv[];
         }
     }
 
-    if (model == 'k')
+    if (argv[argc - 1] == "n")
     {
-        if (argv[argc - 1] == "n")
+        if (model == 'k')
         {
             nullchar = 1;
-            offset = 1;
         }
+        offset = 1;
     }
 
     if ((fptr = fopen(argv[argc - 2 - offset], "r")) == NULL)

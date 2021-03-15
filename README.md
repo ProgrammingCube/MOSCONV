@@ -22,7 +22,7 @@ changed.
 
 ## Usage
 The proper syntax is:
-`mosconv -s/k [-b xx] hexfile.hex file.ptp`
+`mosconv -s/k [-b xx] hexfile.hex file.ptp [n]`
 
 * -**s**/**k**\
 This switch controls if your output paper tape is KIM or SYM compatible.
@@ -32,6 +32,9 @@ This switch controls the number of bytes per record you write. The KIM-1 support
 Source Intel Hex Object code file.
 * **file.ptp**\
 Output paper tape file.
+* **n**\
+If the KIM-1 model is selected, you have an option to print out the 6 NULL characters per record line. By default, this is turned off as it is
+largely seen as a waste of character space and physical tape. Normally, character and line delays are used now. But you can still turn this feature ON by using this switch.
 
 Then, you can use your program of choice to pipe out `file.ptp` as a paper tape to your SYM-1/KIM-1.
 
