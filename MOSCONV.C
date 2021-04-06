@@ -13,6 +13,8 @@
 #define CPM 0
 #define AZTEC_C 0
 #define HI_TECH 0
+#define MAXRC 16
+#define MAXREC 32
 
 #include "stdio.h"
 #if CPM == 0 && AZTEC_C == 0
@@ -83,7 +85,7 @@ char *argv[];
 {
     unsigned char line[BUFFER];
     unsigned char *dataline;
-    unsigned char byteline[24];
+    unsigned char byteline[MAXREC];
     unsigned char headbyte[3];
     unsigned char srcllen;
     unsigned char datallen;
@@ -91,58 +93,23 @@ char *argv[];
     unsigned char numBytes;
     unsigned short checkSum = 0;
     unsigned char arraycnt = 0;
-    unsigned char MAXRC;
-    unsigned char model;
-    unsigned short reccount = 0;
-	unsigned char nullchar = 0;
     FILE *fptr;
     FILE *pfptr;
 
-    /* mosconv -s/k [-b xx] add.hex add.ptp */
-
-    if (argv[1][0] == '-')
-    {
-        switch(argv[1][1])
-        {
-            case 'k': model = 'k'; MAXRC = 24; break;
-            case 'K': model = 'k'; MAXRC = 24; break;
-            case 's': model = 's'; MAXRC = 16; break;
-            case 'S': model = 's'; MAXRC = 16; break;
-        }
-    }
-    else
-    {
-        printf("No target board specified\n");
-        return -3;
-    }
-
-    if (argv[2][0] == '-')
-    {
-        if (argv[2][1] == 'b' || argv[2][1] == 'B')
-        {
-            MAXRC = atoi(argv[3]);
-        }
-        else
-        {
-            printf("Incorrect parameter\n");
-            return -4;
-        }
-    }
-
-    if ((fptr = fopen(argv[argc - 2], "r")) == NULL)
+    if ((fptr = fopen(argv[1], "r")) == NULL)
     {
         printf("File does not exist\n");
         return -1;
     }
 
-    if ((pfptr = fopen(argv[argc - 1], "w")) == NULL)
+    if ((pfptr = fopen(argv[2], "w")) == NULL)
     {
-        printf("Syntax: mosconv -s/k [-b xx] test.asm test.ptp\n");
+        printf("Syntax: mosconv test.asm test.ptp\n");
         return -2;
     }
 
     memset(line, '\0', BUFFER);
-    memset(byteline, '\0', 24);
+    memset(byteline, '\0', MAXREC);
     memset(headbyte, '\0', 3);
 
     printf("Intel Hex Object Code to\nMOS File Format Converter\n");
@@ -154,7 +121,6 @@ char *argv[];
 
         if (srcllen > 12)
         {
-            reccount += 1;
             datallen = srcllen - 12;
             dataline = (unsigned char *)malloc(datallen);
             datacopy(line, dataline, datallen);
@@ -169,6 +135,7 @@ char *argv[];
 
             /* printf("datallen %d\n",datallen); */
             datallen = datallen / 2;  /* bytes size */
+            arraycnt = 0;
             while(datallen > 0)
             {
                 /* printf("------------\n"); */
@@ -190,25 +157,7 @@ char *argv[];
                     fprintf(pfptr, "%02x", byteline[arraycnt + i]);
                 }
                 fprintf(pfptr, "%04x", checkSum);
-                if (model == 'k')
-                {
-                    fprintf(pfptr, "%c", 0x0D); /* cr */
-                    fprintf(pfptr, "%c", 0x0A); /* lf */
-					
-					if (nullchar == 1)
-					{
-						fprintf(pfptr, "%c", 0x00); /* null */
-						fprintf(pfptr, "%c", 0x00); /* null */
-						fprintf(pfptr, "%c", 0x00); /* null */
-						fprintf(pfptr, "%c", 0x00); /* null */
-						fprintf(pfptr, "%c", 0x00); /* null */
-						fprintf(pfptr, "%c", 0x00); /* null */
-					}
-                }
-                if (model == 's')
-                {
-                    fprintf(pfptr, "%c", '\n');
-                }
+                fprintf(pfptr, "%c", '\n');
 
                 datallen -= numBytes;
                 arraycnt += numBytes;
@@ -222,19 +171,8 @@ char *argv[];
         memset(line, '\0', BUFFER);
     }
     printf("Finishing file...\n");
-    if (model == 'k')   /* print footer */
-    {
-        fprintf(pfptr, "%s", ";00");
-        fprintf(pfptr, "%04x", reccount);
-        /* fprintf(pfptr, "%04x", reccount);   /* hack checksum */
-        fprintf(pfptr, "%04x", (unsigned char)(reccount >> 8) + (unsigned char)(reccount & 0xFF));
-        fprintf(pfptr, "%c", 0x13);         /* XOFF */
-    }
-    if (model == 's')
-    {
-        fprintf(pfptr, "%s", ";00\r");
-    }
-
+    fprintf(pfptr, "%s", ";00");
+    fprintf(pfptr, "%c", 0x13);           /* print footer */
 
     fclose(fptr);
     fclose(pfptr);
