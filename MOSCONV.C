@@ -14,7 +14,6 @@
 #define CPM 0
 #define AZTEC_C 0
 #define HI_TECH 0
-#define NULLCHAR 0
 #define MAXREC 32
 
 #include "stdio.h"
@@ -198,16 +197,6 @@ char *argv[];
                 {
                     fprintf(pfptr, "%c", 0x0D); /* cr */
                     fprintf(pfptr, "%c", 0x0A); /* lf */
-
-					#if NULLCHAR    ==  0
-                    fprintf(pfptr, "%c", 0x00); /* null */
-					fprintf(pfptr, "%c", 0x00); /* null */
-					fprintf(pfptr, "%c", 0x00); /* null */
-					fprintf(pfptr, "%c", 0x00); /* null */
-					fprintf(pfptr, "%c", 0x00); /* null */
-					fprintf(pfptr, "%c", 0x00); /* null */
-
-                    #endif
                 }
                 if (model == 's')
                 {
