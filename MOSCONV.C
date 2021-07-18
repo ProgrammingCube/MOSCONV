@@ -79,6 +79,14 @@ unsigned char d;
     return (charNum(c) << 4) + charNum(d);
 }
 
+unsigned char upper(c)
+unsigned char c;
+{
+    if(c >= 'a' && c <= 'z')
+        return c - 32;
+    return c;
+}
+
 int main(argc, argv)
 int argc;
 char *argv[];
@@ -190,7 +198,7 @@ char *argv[];
                 fprintf(pfptr, "%02x", headbyte[2]);
                 for (i = 0; i < numBytes; i++)
                 {
-                    fprintf(pfptr, "%02x", byteline[arraycnt + i]);
+                    fprintf(pfptr, "%02x", upper(byteline[arraycnt + i]));
                 }
                 fprintf(pfptr, "%04x", checkSum);
                 if (model == 'k')
