@@ -234,7 +234,7 @@ char *argv[];
     if (model == 's')
     {
         fprintf(pfptr, "%s", ";00");
-        fprintf(pfptr, "%c", 0x13);
+        fprintf(pfptr, "%c", 0x0D);
     }
 
 
