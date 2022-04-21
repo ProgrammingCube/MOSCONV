@@ -162,6 +162,7 @@ char *argv[];
     while (fgets(line, BUFFER, fptr))
     {
         srcllen = strlen(line);
+        printf("Line: %s\n", line);
 
         if (srcllen > 12)
         {
@@ -169,6 +170,9 @@ char *argv[];
             datallen = srcllen - 12;
             dataline = (unsigned char *)malloc(datallen);
             datacopy(line, dataline, datallen);
+
+            printf("Dataline: %s\n", dataline);
+
             for ( i = 0; i < datallen; i+=2)
             {
                 byteline[i/2] = charByte(dataline[i], dataline[i+1]);
@@ -180,6 +184,9 @@ char *argv[];
 
             /* printf("datallen %d\n",datallen); */
             datallen = datallen / 2;  /* bytes size */
+            headbyte[2] = charByte(line[5], line[6]);
+
+            arraycnt = 7;
             while(datallen > 0)
             {
                 /* printf("------------\n"); */
