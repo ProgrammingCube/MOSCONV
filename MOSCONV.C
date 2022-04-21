@@ -40,13 +40,13 @@ unsigned char *line;
 
 void* memset(s, c, len)
 void *s;
-int c;
+unsigned char c;
 int len;
 {
     unsigned char *dst = s;
     while (len > 0)
     {
-        *dst = (unsigned char) c;
+        *dst = c;
         dst++;
         len--;
     }
@@ -183,7 +183,7 @@ char *argv[];
             datallen = datallen / 2;  /* bytes size */
             headbyte[2] = charByte(line[5], line[6]);
 
-            arraycnt = 7;
+            arraycnt = 0;
             while(datallen > 0)
             {
                 /* printf("------------\n"); */
@@ -231,7 +231,6 @@ char *argv[];
     {
         fprintf(pfptr, "%s", ";00");
         fprintf(pfptr, "%04x", reccount);
-        /* fprintf(pfptr, "%04x", reccount);   /* hack checksum */
         fprintf(pfptr, "%04x", (unsigned char)(reccount >> 8) + (unsigned char)(reccount & 0xFF));
         fprintf(pfptr, "%c", 0x13);         /* XOFF */
     }
