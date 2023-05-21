@@ -11,12 +11,11 @@
  *
  */
 
-#define CPM 0
-#define AZTEC_C 0
+#define CPM 1
+#define AZTEC_C 1
 #define HI_TECH 0
 #define MAXREC 32
 
-#include "stdio.h"
 #if CPM == 0 && AZTEC_C == 0
 #include "stdlib.h"
 #include "string.h"
@@ -24,7 +23,7 @@
 
 #define BUFFER  256
 
-#include "main.h"
+#include "mosconv.h"
 
 int main(argc, argv)
 int argc;
