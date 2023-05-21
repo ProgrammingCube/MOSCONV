@@ -24,73 +24,16 @@
 
 #define BUFFER  256
 
-#if AZTEC_C == 1
-unsigned char strlen(line)
-unsigned char *line;
-{
-    unsigned char i = 0;
-    unsigned char a = 1;
-    while (a != '\0')
-    {
-        a = line[i];
-        i++;
-    }
-    return i - 1;
-}
-
-void* memset(s, c, len)
-void *s;
-unsigned char c;
-int len;
-{
-    unsigned char *dst = s;
-    while (len > 0)
-    {
-        *dst = c;
-        dst++;
-        len--;
-    }
-    return s;
-}
-#endif /* AZTEC_C */
-
-void datacopy(line, dataline, len)
-unsigned char *line;
-unsigned char *dataline;
-unsigned char len;
-{
-    unsigned char i;
-    for (i = 0; i < len; i++)
-        dataline[i] = line[i + 9];
-}
-
-unsigned char charNum(c)
-unsigned char c;
-{
-    if (c < 58)
-        return c - 48;
-    return c - 55; /*- 'A' + 9 */
-}
-
-unsigned char charByte(c, d)
-unsigned char c;
-unsigned char d;
-{
-    return (charNum(c) << 4) + charNum(d);
-}
-
-unsigned char upper(c)
-unsigned char c;
-{
-    if(c >= 'a' && c <= 'z')
-        return c - 32;
-    return c;
-}
+#include "main.h"
 
 int main(argc, argv)
 int argc;
 char *argv[];
 {
+    srcstr sourcestr;
+    deststr destnstr;
+    int asciidlen;
+
     unsigned char line[BUFFER];
     unsigned char *dataline;
     unsigned char byteline[MAXREC];
@@ -99,58 +42,23 @@ char *argv[];
     unsigned char datallen;
     int i;
     unsigned char numBytes;
+
+    unsigned int dstpos;
+    unsigned int srcpos;
+
     unsigned short checkSum = 0;
     unsigned char arraycnt = 0;
     unsigned char MAXRC;
     unsigned char model;
     unsigned short reccount = 0;
-    FILE *fptr;
-    FILE *pfptr;
+    FILE *fptr = 0;
+    FILE *pfptr = 0;
+
 
     /* mosconv -s/k [-b xx] add.hex add.ptp [n]*/
 
-    if (argv[1][0] == '-')
-    {
-        switch(argv[1][1])
-        {
-            case 'k':
-            case 'K': model = 'k'; MAXRC = 24;
-                    break;
-            case 's':
-            case 'S': model = 's'; MAXRC = 16;
-                    break;
-        }
-    }
-    else
-    {
-        printf("No target board specified\n");
-        return -3;
-    }
-
-    if (argv[2][0] == '-')
-    {
-        if (argv[2][1] == 'b' || argv[2][1] == 'B')
-        {
-            MAXRC = atoi(argv[3]);
-        }
-        else
-        {
-            printf("Incorrect parameter\n");
-            return -4;
-        }
-    }
-
-    if ((fptr = fopen(argv[argc - 2], "r")) == NULL)
-    {
-        printf("File does not exist\n");
-        return -1;
-    }
-
-    if ((pfptr = fopen(argv[argc - 1], "w")) == NULL)
-    {
-        printf("Syntax: mosconv -s/k [-b xx] test.asm test.ptp\n");
-        return -2;
-    }
+    if (parseargs(argc, argv, &MAXRC, &model, &fptr, &pfptr) < 0)
+        puts("exiting");
 
     memset(line, '\0', BUFFER);
     memset(byteline, '\0', MAXREC);
@@ -159,73 +67,55 @@ char *argv[];
     printf("Intel Hex Object Code to\nMOS File Format Converter\n");
     printf("\nby Patrick Jackson, 2021\nLoading file...\n");
 
+    dstpos = 0;
+
     while (fgets(line, BUFFER, fptr))
     {
         srcllen = strlen(line);
 
         if (srcllen > 12)
         {
-            reccount += 1;
-            datallen = srcllen - 12;
-            dataline = (unsigned char *)malloc(datallen);
-            datacopy(line, dataline, datallen);
+            /* fill struct */
 
-            for ( i = 0; i < datallen; i+=2)
+            sourcestr.rec_strt = line[0];
+            sourcestr.data_len = charByte(line[1], line[2]);
+            sourcestr.address = charInt(line[3], line[4], line[5], line[6]);
+            sourcestr.data_typ = charByte(line[7], line[8]);
+
+            asciidlen = sourcestr.data_len << 1;
+            for ( i = 0; i < asciidlen; i+=2)
+                sourcestr.data[i/2] = charByte(line[i + 9], line[i+1 + 9]);
+
+            sourcestr.chksum = charByte(line[9 + asciidlen], line[10 + asciidlen]);
+
+            srcpos = 0;
+
+            while (srcpos < sourcestr.data_len)
             {
-                byteline[i/2] = charByte(dataline[i], dataline[i+1]);
-                /* printf("%x\n",byteline[i/2]); */
-            }
-            headbyte[0] = charByte(line[1], line[2]);
-            headbyte[1] = charByte(line[3], line[4]);
-            headbyte[2] = charByte(line[5], line[6]);
-
-            /* printf("datallen %d\n",datallen); */
-            datallen = datallen / 2;  /* bytes size */
-            headbyte[2] = charByte(line[5], line[6]);
-
-            arraycnt = 0;
-            while(datallen > 0)
-            {
-                /* printf("------------\n"); */
-
-                numBytes = datallen % MAXRC;
-                if(numBytes == 0) numBytes = MAXRC;
-                for (i = 0; i < numBytes; i++)
+                if ((dstpos > 0) && ((destnstr.address + dstpos) != srcpos))
                 {
-                    checkSum += byteline[arraycnt + i];
+                    ptpprint(&destnstr, pfptr);
+                    dstpos = 0;
                 }
 
-                /* logic to write to a file */
-                fprintf(pfptr, "%c", ';');
-                fprintf(pfptr, "%02x", numBytes);
-                fprintf(pfptr, "%02x", headbyte[1]);
-                fprintf(pfptr, "%02x", headbyte[2]);
-                for (i = 0; i < numBytes; i++)
-                {
-                    fprintf(pfptr, "%02x", upper(byteline[arraycnt + i]));
-                }
-                fprintf(pfptr, "%04x", checkSum);
-                if (model == 'k')
-                {
-                    fprintf(pfptr, "%c", 0x0D); /* cr */
-                    fprintf(pfptr, "%c", 0x0A); /* lf */
-                }
-                if (model == 's')
-                {
-                    fprintf(pfptr, "%c", '\n');
-                }
+                cpystruct(&sourcestr, &destnstr, &srcpos, &dstpos, MAXRC);
 
-                datallen -= numBytes;
-                arraycnt += numBytes;
-                checkSum = 0;
-                /* increment header */
-                if(headbyte[2] + datallen > 255) headbyte[1] += numBytes;
-                else headbyte[2] += numBytes;
+                if (dstpos == MAXRC)
+                {
+                    ptpprint(&destnstr, pfptr);
+                    dstpos = 0;
+                }
             }
         }
 
         memset(line, '\0', BUFFER);
     }
+
+    if (dstpos != 0)
+    {
+        ptpprint(&destnstr, pfptr);
+    }
+
     printf("Finishing file...\n");
     if (model == 'k')   /* print footer */
     {
